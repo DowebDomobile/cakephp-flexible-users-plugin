@@ -1,0 +1,23 @@
+{
+    "name": "DowebDomobile/cakephp-flexible-users-plugin",
+    "description": "Flexible users plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "require": {
+        "cakephp/cakephp": "^3.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7|^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dwdm\\Users\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dwdm\\Users\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}
