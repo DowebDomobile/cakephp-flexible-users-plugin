@@ -20,9 +20,11 @@ class CreateUsers extends AbstractMigration
             ->addColumn('registered', 'datetime',
                 ['comment' => 'User record creation time', 'default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('token', 'string',
-                ['comment' => 'Token for restore user password and confirm registration', 'null' => true])
+                ['comment' => 'Token for restore user password', 'null' => true])
             ->addColumn('expiration', 'datetime',
-                ['comment' => 'Restore password token expiration time', 'null' => true]);
+                ['comment' => 'Restore password token expiration time', 'null' => true])
+            ->addColumn('is_active', 'boolean',
+                ['comment' => 'User not active, active or banned', 'null' => true]);
 
         $table->create();
     }

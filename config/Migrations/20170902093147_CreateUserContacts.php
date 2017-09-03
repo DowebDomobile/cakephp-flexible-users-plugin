@@ -18,17 +18,17 @@ class CreateUserContacts extends AbstractMigration
         $table
             ->addColumn('user_id', 'integer', ['comment' => 'Link to id column in users table'])
             ->addColumn('name', 'string', ['length' => 30, 'comment' => 'Contact handler name'])
-            ->addColumn('value', 'string', ['comment' => 'Contact value'])
-            ->addColumn('is_login', 'boolean', ['comment' => 'Mark contact as login name'])
-            ->addColumn('created', 'datetime',
-                ['comment' => 'Contact creation date', 'default' => 'CURRENT_TIMESTAMP'])
-            ->addColumn('updated', 'datetime',
-                ['comment' => 'Contact renew date', 'default' => 'CURRENT_TIMESTAMP'])
+            ->addColumn('value', 'string', ['comment' => 'Contact value', 'null' => true])
             ->addColumn('replace', 'string',
                 ['comment' => 'Contact value for replace after confirmation', 'null' => true])
             ->addColumn('token', 'string', ['comment' => 'Token for confirm new contact value', 'null' => true])
             ->addColumn('expiration', 'datetime',
-                ['comment' => 'Expiration date for confirmation token', 'null' => true]);
+                ['comment' => 'Expiration date for confirmation token', 'null' => true])
+            ->addColumn('is_login', 'boolean', ['comment' => 'Mark contact as login name'])
+            ->addColumn('created', 'datetime',
+                ['comment' => 'Contact creation date', 'default' => 'CURRENT_TIMESTAMP'])
+            ->addColumn('updated', 'datetime',
+                ['comment' => 'Contact renew date', 'default' => 'CURRENT_TIMESTAMP']);
 
         $table->addForeignKey('user_id', 'users', 'id',
             ['update' => ForeignKey::CASCADE, 'delete' => ForeignKey::CASCADE]);

@@ -10,10 +10,10 @@ use Cake\ORM\Entity;
  * @property int $user_id
  * @property string $name
  * @property string $value
+ * @property string $replace
  * @property bool $is_login
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $updated
- * @property string $replace
  * @property string $token
  * @property \Cake\I18n\FrozenTime $expiration
  *
@@ -32,8 +32,7 @@ class UserContact extends Entity
      * @var array
      */
     protected $_accessible = [
-        '*' => true,
-        'id' => false
+        '*' => false,
     ];
 
     /**

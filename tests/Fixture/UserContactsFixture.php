@@ -20,11 +20,11 @@ class UserContactsFixture extends TestFixture
         'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true, 'default' => null, 'null' => false, 'comment' => null, 'precision' => null, 'unsigned' => null],
         'user_id' => ['type' => 'integer', 'length' => 10, 'default' => null, 'null' => false, 'comment' => 'Link to id column in users table', 'precision' => null, 'unsigned' => null, 'autoIncrement' => null],
         'name' => ['type' => 'string', 'length' => 30, 'default' => null, 'null' => false, 'collate' => null, 'comment' => 'Contact handler name', 'precision' => null, 'fixed' => null],
-        'value' => ['type' => 'string', 'length' => 255, 'default' => null, 'null' => false, 'collate' => null, 'comment' => 'Contact value', 'precision' => null, 'fixed' => null],
+        'value' => ['type' => 'string', 'length' => 255, 'default' => null, 'null' => true, 'collate' => null, 'comment' => 'Contact value', 'precision' => null, 'fixed' => null],
+        'replace' => ['type' => 'string', 'length' => 255, 'default' => null, 'null' => true, 'collate' => null, 'comment' => 'Contact value for replace after confirmation', 'precision' => null, 'fixed' => null],
         'is_login' => ['type' => 'boolean', 'length' => null, 'default' => null, 'null' => false, 'comment' => 'Mark contact as login name', 'precision' => null],
         'created' => ['type' => 'timestamp', 'length' => null, 'default' => 'now()', 'null' => false, 'comment' => 'Contact creation date', 'precision' => null],
         'updated' => ['type' => 'timestamp', 'length' => null, 'default' => 'now()', 'null' => false, 'comment' => 'Contact renew date', 'precision' => null],
-        'replace' => ['type' => 'string', 'length' => 255, 'default' => null, 'null' => true, 'collate' => null, 'comment' => 'Contact value for replace after confirmation', 'precision' => null, 'fixed' => null],
         'token' => ['type' => 'string', 'length' => 255, 'default' => null, 'null' => true, 'collate' => null, 'comment' => 'Token for confirm new contact value', 'precision' => null, 'fixed' => null],
         'expiration' => ['type' => 'timestamp', 'length' => null, 'default' => null, 'null' => true, 'comment' => 'Expiration date for confirmation token', 'precision' => null],
         '_constraints' => [
@@ -41,16 +41,16 @@ class UserContactsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 1,
-            'user_id' => 1,
-            'name' => 'Lorem ipsum dolor sit amet',
-            'value' => 'Lorem ipsum dolor sit amet',
+            'id' => 100,
+            'user_id' => 100,
+            'name' => 'emailt',
+            'value' => 'user100@example.com',
+            'replace' => null,
             'is_login' => 1,
-            'created' => 1504352977,
-            'updated' => 1504352977,
-            'replace' => 'Lorem ipsum dolor sit amet',
-            'token' => 'Lorem ipsum dolor sit amet',
-            'expiration' => 1504352977
+            'created' => 1504442672,
+            'updated' => 1504442672,
+            'token' => null,
+            'expiration' => null,
         ],
     ];
 }

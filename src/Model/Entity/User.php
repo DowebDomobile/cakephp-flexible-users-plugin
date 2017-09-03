@@ -1,6 +1,7 @@
 <?php
 namespace Dwdm\Users\Model\Entity;
 
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 
 /**
@@ -11,8 +12,10 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $registered
  * @property string $token
  * @property \Cake\I18n\FrozenTime $expiration
+ * @property bool $is_active
  *
- * @property \Dwdm\Users\Model\Entity\UserContact[] $user_contacts
+ * @property \Dwdm\Users\Model\Entity\UserAttribute[] $attributes
+ * @property \Dwdm\Users\Model\Entity\UserContact[] $contacts
  */
 class User extends Entity
 {
@@ -27,8 +30,7 @@ class User extends Entity
      * @var array
      */
     protected $_accessible = [
-        '*' => true,
-        'id' => false
+        '*' => false
     ];
 
     /**
@@ -40,4 +42,11 @@ class User extends Entity
         'password',
         'token'
     ];
+
+    protected function _setPassword($password)
+    {
+        if (strlen($password) > 0) {
+            return (new DefaultPasswordHasher)->hash($password);
+        }
+    }
 }

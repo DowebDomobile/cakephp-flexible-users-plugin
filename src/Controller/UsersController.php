@@ -1,8 +1,9 @@
 <?php
 namespace Dwdm\Users\Controller;
 
-use Cake\Http\Response;
-use Dwdm\Users\Model\Entity\User;
+use Cake\Event\Event;
+use Cake\Utility\Text;
+use Dwdm\Users\Controller\Users\AddActionTrait;
 
 /**
  * Users Controller
@@ -13,6 +14,44 @@ use Dwdm\Users\Model\Entity\User;
  */
 class UsersController extends AppController
 {
+    use AddActionTrait {
+        add as register;
+    }
+
+    public function implementedEvents()
+    {
+        return parent::implementedEvents() + [
+                'Controller.Users.add.beforeSave' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+
+                    $data = $controller->request->getData();
+                    if (isset($data['email'])) {
+                        $data['contacts'][] = [
+                            'name' => 'email',
+                            'replace' => $data['email'],
+                            'token' => Text::uuid(),
+                            'is_login' => true,
+                        ];
+                    }
+
+                    return ['data' => $data,
+                        'options' => [
+                            'fields' => ['password', 'contacts'],
+                            'associated' => ['UserContacts' => ['fields' => ['name', 'replace', 'token', 'is_login']]]
+                        ]
+                    ];
+                },
+                'Controller.Users.add.afterSave' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+
+                    return $controller->redirect(['action' => 'index']);
+                },
+            ];
+    }
+
+
     /**
      * Index method
      *
@@ -41,61 +80,6 @@ class UsersController extends AppController
 
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
-    }
-
-    /**
-     * Add user
-     *
-     * @return \Cake\Http\Response|null
-     */
-    public function add()
-    {
-        $result = $this->dispatchEvent('Controller.Users.add.before', null, $this)->getResult();
-
-        if ($result instanceof Response) {
-            return $result;
-        }
-
-        $user = $result instanceof User ? $result : $this->Users->newEntity();
-
-        if ($this->request->is('post')) {
-            $result = $this->dispatchEvent('Controller.Users.add.beforeSave', compact('user'), $this)->getResult();
-
-            if ($result instanceof User) {
-                $user = $result;
-            } else {
-                $data = is_array($result) && isset($result['data']) ? $result['data'] : $this->request->getData();
-                $options = is_array($result) && isset($result['options']) ? $result['options'] : [];
-                $this->Users->patchEntity($user, $data, $options);
-            }
-
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__d('users', 'The user has been saved.'));
-
-                $result = $this->dispatchEvent('Controller.Users.add.afterSave', compact('user'), $this)->getResult();
-
-                if ($result instanceof Response) {
-                    return $result;
-                }
-            } else {
-                $this->Flash->error(__d('users', 'The user could not be saved. Please, try again.'));
-
-                $result = $this->dispatchEvent('Controller.Users.add.afterFail', compact('user'), $this)->getResult();
-
-                if ($result instanceof Response) {
-                    return $result;
-                }
-            }
-        }
-
-        $result = $this->dispatchEvent('Controller.Users.add.after', compact('user'), $this)->getResult();
-
-        $user = $result instanceof User ? $result : $user;
-
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
-
-        return null;
     }
 
     /**

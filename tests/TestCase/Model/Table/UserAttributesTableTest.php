@@ -24,6 +24,7 @@ class UserAttributesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'plugin.dwdm/users.users',
         'plugin.dwdm/users.user_attributes'
     ];
 

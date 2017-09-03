@@ -25,6 +25,7 @@ class UsersTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.dwdm/users.users',
+        'plugin.dwdm/users.user_attributes',
         'plugin.dwdm/users.user_contacts'
     ];
 

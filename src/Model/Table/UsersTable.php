@@ -1,15 +1,14 @@
 <?php
 namespace Dwdm\Users\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Dwdm\Users\Model\Validation\UsersRegisterValidator;
 
 /**
  * Users Model
  *
- * @property |\Cake\ORM\Association\HasMany $UserAttributes
+ * @property \Dwdm\Users\Model\Table\UserAttributesTable|\Cake\ORM\Association\HasMany $UserAttributes
  * @property \Dwdm\Users\Model\Table\UserContactsTable|\Cake\ORM\Association\HasMany $UserContacts
  *
  * @method \Dwdm\Users\Model\Entity\User get($primaryKey, $options = [])
@@ -37,45 +36,17 @@ class UsersTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->setValidator('default', new UsersRegisterValidator());
+
         $this->hasMany('UserAttributes', [
             'foreignKey' => 'user_id',
-            'className' => 'Dwdm/Users.UserAttributes'
+            'className' => 'Dwdm/Users.UserAttributes',
+            'propertyName' => 'attributes',
         ]);
         $this->hasMany('UserContacts', [
             'foreignKey' => 'user_id',
-            'className' => 'Dwdm/Users.UserContacts'
+            'className' => 'Dwdm/Users.UserContacts',
+            'propertyName' => 'contacts',
         ]);
-    }
-
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-    public function validationDefault(Validator $validator)
-    {
-        $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
-
-        $validator
-            ->scalar('password')
-            ->allowEmpty('password');
-
-        $validator
-            ->dateTime('registered')
-            ->requirePresence('registered', 'create')
-            ->notEmpty('registered');
-
-        $validator
-            ->scalar('token')
-            ->allowEmpty('token');
-
-        $validator
-            ->dateTime('expiration')
-            ->allowEmpty('expiration');
-
-        return $validator;
     }
 }

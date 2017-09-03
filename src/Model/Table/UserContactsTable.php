@@ -66,17 +66,16 @@ class UserContactsTable extends Table
 
         $validator
             ->scalar('value')
-            ->requirePresence('value', 'create')
-            ->notEmpty('value');
+            ->allowEmpty('value');
+
+        $validator
+            ->scalar('replace')
+            ->allowEmpty('replace');
 
         $validator
             ->boolean('is_login')
             ->requirePresence('is_login', 'create')
             ->notEmpty('is_login');
-
-        $validator
-            ->scalar('replace')
-            ->allowEmpty('replace');
 
         $validator
             ->scalar('token')

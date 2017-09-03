@@ -35,10 +35,10 @@ class UserAttributesFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 1,
-            'user_id' => 1,
-            'name' => 'Lorem ipsum dolor sit amet',
-            'value' => 'Lorem ipsum dolor sit amet'
+            'id' => 100,
+            'user_id' => 100,
+            'name' => 'name',
+            'value' => 'John'
         ],
     ];
 }
