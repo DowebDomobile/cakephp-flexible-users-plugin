@@ -46,7 +46,7 @@ class UserContactsController extends AppController
                         $controller->request = $controller->request->withMethod('POST');
                     }
 
-                    if (!empty($params) && !$contact) {
+                    if (!empty($params['token']) && !$contact) {
                         $controller->request = $controller->request->withMethod('GET');
                         $controller->request->clearDetectorCache();
                         $controller->Flash->error(__d('users', 'Contact was not found.'));

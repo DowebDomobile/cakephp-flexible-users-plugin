@@ -31,6 +31,8 @@ class ConfirmActionTest extends UsersControllerTestCase
         $this->assertResponseContains('name="token"');
         $this->assertResponseContains('Submit');
 
+        $this->assertResponseNotContains('Contact was not found');
+
         $this->assertResponseOk();
     }
 
