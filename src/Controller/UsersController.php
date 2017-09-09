@@ -1,9 +1,12 @@
 <?php
+/**
+ * @copyright     Copyright (c) DowebDomobile (http://dowebdomobile.ru)
+ */
 namespace Dwdm\Users\Controller;
 
 use Cake\Event\Event;
 use Cake\Utility\Text;
-use Dwdm\Users\Controller\Users\AddActionTrait;
+use Dwdm\Users\Controller\Crud\CreateActionTrait;
 
 /**
  * Users Controller
@@ -14,14 +17,14 @@ use Dwdm\Users\Controller\Users\AddActionTrait;
  */
 class UsersController extends AppController
 {
-    use AddActionTrait {
-        add as register;
+    use CreateActionTrait {
+        create as register;
     }
 
     public function implementedEvents()
     {
         return parent::implementedEvents() + [
-                'Controller.Users.add.beforeSave' => function (Event $event) {
+                'Controller.Users.register.beforeSave' => function (Event $event) {
                     /** @var UsersController $controller */
                     $controller = $event->getSubject();
 
@@ -42,12 +45,18 @@ class UsersController extends AppController
                         ]
                     ];
                 },
-                'Controller.Users.add.afterSave' => function (Event $event) {
+                'Controller.Users.register.afterSave' => function (Event $event) {
                     /** @var UsersController $controller */
                     $controller = $event->getSubject();
 
+                    $controller->Flash->success(__d('users', 'Registration success. Confirmation email was sent.'));
                     return $controller->redirect(['action' => 'index']);
                 },
+                'Controller.Users.register.afterFail' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+                    $controller->Flash->error(__d('users', 'Invalid registration data.'));
+                }
             ];
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Dwdm\Users\Test\Fixture;
 
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\TestSuite\Fixture\TestFixture;
 
 /**
@@ -29,19 +30,37 @@ class UsersFixture extends TestFixture
     ];
     // @codingStandardsIgnoreEnd
 
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 100,
-            'password' => 'Lorem ipsum dolor sit amet',
-            'registered' => 1504434628,
-            'token' => null,
-            'expiration' => null,
-            'is_active' => 1
-        ],
-    ];
+    public function init()
+    {
+        $password = (new DefaultPasswordHasher())->hash('password');
+
+        $this->records = [
+            [
+                'id' => 100,
+                'password' => $password,
+                'registered' => 1504434628,
+                'token' => null,
+                'expiration' => null,
+                'is_active' => 1
+            ],
+            [
+                'id' => 101,
+                'password' => $password,
+                'registered' => 1504434628,
+                'token' => null,
+                'expiration' => null,
+                'is_active' => null
+            ],
+            [
+                'id' => 102,
+                'password' => $password,
+                'registered' => 1504434628,
+                'token' => null,
+                'expiration' => null,
+                'is_active' => 1
+            ],
+        ];
+
+        parent::init();
+    }
 }

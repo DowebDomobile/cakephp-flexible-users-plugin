@@ -9,25 +9,14 @@ use Cake\ORM\TableRegistry;
 /**
  * Dwdm\Users\Controller\UsersController::add Test Case
  */
-class AddActionTest extends UsersControllerTestCase
+class RegisterActionTest extends UsersControllerTestCase
 {
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'plugin.dwdm/users.users',
-        'plugin.dwdm/users.user_contacts',
-        'plugin.dwdm/users.user_attributes',
-    ];
-
-    public function testRegisterGetForm()
+    public function testGetRegisterForm()
     {
         $this->get('/users/users/register');
 
-        $this->assertEventFired('Controller.Users.add.before');
-        $this->assertEventFired('Controller.Users.add.after');
+        $this->assertEventFired('Controller.Users.register.before');
+        $this->assertEventFired('Controller.Users.register.after');
 
         $this->assertResponseContains('Register');
         $this->assertResponseContains('Email');
@@ -41,14 +30,14 @@ class AddActionTest extends UsersControllerTestCase
         $this->assertResponseOk();
     }
 
-    public function testRegisterPostFormSuccess()
+    public function testPostRegisterFormSuccess()
     {
         $this->post('/users/users/register',
             $data = ['email' => 'register@example.com', 'password' => 'password', 'verify' => 'password']);
 
-        $this->assertEventFired('Controller.Users.add.before');
-        $this->assertEventFired('Controller.Users.add.beforeSave');
-        $this->assertEventFired('Controller.Users.add.afterSave');
+        $this->assertEventFired('Controller.Users.register.before');
+        $this->assertEventFired('Controller.Users.register.beforeSave');
+        $this->assertEventFired('Controller.Users.register.afterSave');
 
         $this->assertResponseCode(302);
 
@@ -57,7 +46,7 @@ class AddActionTest extends UsersControllerTestCase
 
         $query = TableRegistry::get('Dwdm/Users.Users')->find();
 
-        $this->assertCount(count($userFixture) + 1, $query);
+        $this->assertCount(count($userFixture->records) + 1, $query);
 
         $query = TableRegistry::get('Dwdm/Users.Users')
             ->find()
@@ -93,7 +82,7 @@ class AddActionTest extends UsersControllerTestCase
         $this->assertNull($contact->expiration);
     }
 
-    public function testRegisterPostEmptyFromFail()
+    public function testPostRegisterEmptyFromFail()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
