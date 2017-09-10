@@ -13,7 +13,7 @@ use Dwdm\Users\Model\Entity\UserContact;
  * Class UserContactsController
  * @package Dwdm\Users\Controller
  */
-class UserContactsController extends AppController
+class UserContactsController extends PluginController
 {
     use UpdateActionTrait {
         update as confirm;

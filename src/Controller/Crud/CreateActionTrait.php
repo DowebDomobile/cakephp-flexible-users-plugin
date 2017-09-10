@@ -44,11 +44,8 @@ trait CreateActionTrait
                 $entity = $this->loadModel()->patchEntity($entity, $data, $options);
             }
 
-            if ($this->loadModel()->save($entity)) {
-                $result = $this->dispatchEvent($this->_eventName('afterSave'), compact('entity'), $this)->getResult();
-            } else {
-                $result = $this->dispatchEvent($this->_eventName('afterFail'), compact('entity'), $this)->getResult();
-            }
+            $eventName = $this->loadModel()->save($entity) ? 'afterSave' : 'afterFail';
+            $result = $this->dispatchEvent($this->_eventName($eventName), compact('entity'), $this)->getResult();
 
             if ($result instanceof Response) {
                 return $result;
@@ -62,6 +59,6 @@ trait CreateActionTrait
         $this->set(compact('entity'));
         $this->set('_serialize', ['entity']);
 
-        return null;
+        return ($result instanceof Response) ? $result : null;
     }
 }

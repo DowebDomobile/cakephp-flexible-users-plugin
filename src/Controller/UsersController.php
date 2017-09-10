@@ -6,8 +6,8 @@ namespace Dwdm\Users\Controller;
 
 use Cake\Controller\Component\AuthComponent;
 use Cake\Event\Event;
-use Cake\Http\Response;
 use Cake\Utility\Text;
+use Dwdm\Users\Controller\Action\LoginActionTrait;
 use Dwdm\Users\Controller\Crud\CreateActionTrait;
 use Dwdm\Users\Model\Table\UsersTable;
 use Dwdm\Users\Model\Validation\UsersRegisterValidator;
@@ -15,10 +15,12 @@ use Dwdm\Users\Model\Validation\UsersRegisterValidator;
 /**
  * Users Controller
  */
-class UsersController extends AppController
+class UsersController extends PluginController
 {
-    use CreateActionTrait {
+    use LoginActionTrait, CreateActionTrait {
         create as register;
+        CreateActionTrait::_eventName insteadof LoginActionTrait;
+        CreateActionTrait::_entityClass insteadof LoginActionTrait;
     }
 
     public function implementedEvents()
@@ -108,31 +110,5 @@ class UsersController extends AppController
                         );
                 }
             ] + parent::implementedEvents();
-    }
-
-    /**
-     * Login user.
-     *
-     * @return Response|null
-     */
-    public function login()
-    {
-        $result = $this->dispatchEvent($this->_eventName('before'), null, $this)->getResult();
-
-        if ($this->request->is('post')) {
-            if ($user = $this->Auth->identify()) {
-                $result = $this->dispatchEvent($this->_eventName('afterIdentify'), compact('user'), $this)->getResult();
-            } else {
-                $result = $this->dispatchEvent($this->_eventName('afterFail'), null, $this)->getResult();
-            }
-
-            if ($result instanceof Response) {
-                return $result;
-            }
-        }
-
-        $result = $this->dispatchEvent($this->_eventName('after'), null, $this)->getResult();
-
-        return ($result instanceof Response) ? $result : null;
     }
 }
