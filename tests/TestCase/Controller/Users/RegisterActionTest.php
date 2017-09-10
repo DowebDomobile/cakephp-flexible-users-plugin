@@ -15,9 +15,6 @@ class RegisterActionTest extends UsersControllerTestCase
     {
         $this->get('/users/users/register');
 
-        $this->assertEventFired('Controller.Users.register.before');
-        $this->assertEventFired('Controller.Users.register.after');
-
         $this->assertResponseContains('Register');
         $this->assertResponseContains('Email');
         $this->assertResponseContains('name="email"');
@@ -28,16 +25,15 @@ class RegisterActionTest extends UsersControllerTestCase
         $this->assertResponseContains('Submit');
 
         $this->assertResponseOk();
+
+        $this->assertEventFired('Controller.Users.register.before');
+        $this->assertEventFired('Controller.Users.register.after');
     }
 
     public function testPostRegisterFormSuccess()
     {
         $this->post('/users/users/register',
             $data = ['email' => 'register@example.com', 'password' => 'password', 'verify' => 'password']);
-
-        $this->assertEventFired('Controller.Users.register.before');
-        $this->assertEventFired('Controller.Users.register.beforeSave');
-        $this->assertEventFired('Controller.Users.register.afterSave');
 
         $this->assertResponseCode(302);
 
@@ -80,6 +76,10 @@ class RegisterActionTest extends UsersControllerTestCase
         $this->assertNotEmpty($contact->updated);
         $this->assertNotEmpty($contact->token);
         $this->assertNull($contact->expiration);
+
+        $this->assertEventFired('Controller.Users.register.before');
+        $this->assertEventFired('Controller.Users.register.beforeSave');
+        $this->assertEventFired('Controller.Users.register.afterSave');
     }
 
     public function testPostRegisterEmptyFromFail()

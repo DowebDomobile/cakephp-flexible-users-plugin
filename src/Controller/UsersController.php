@@ -4,16 +4,16 @@
  */
 namespace Dwdm\Users\Controller;
 
+use Cake\Controller\Component\AuthComponent;
 use Cake\Event\Event;
+use Cake\Http\Response;
 use Cake\Utility\Text;
 use Dwdm\Users\Controller\Crud\CreateActionTrait;
+use Dwdm\Users\Model\Table\UsersTable;
+use Dwdm\Users\Model\Validation\UsersRegisterValidator;
 
 /**
  * Users Controller
- *
- * @property \Dwdm\Users\Model\Table\UsersTable $Users
- *
- * @method \Dwdm\Users\Model\Entity\User[] paginate($object = null, array $settings = [])
  */
 class UsersController extends AppController
 {
@@ -21,9 +21,24 @@ class UsersController extends AppController
         create as register;
     }
 
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->Auth->allow(['register']);
+    }
+
     public function implementedEvents()
     {
         return parent::implementedEvents() + [
+                'Controller.Users.register.before' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+
+                    /** @var UsersTable $Users */
+                    $Users = $controller->loadModel();
+                    $Users->setValidator('default', new UsersRegisterValidator());
+                },
                 'Controller.Users.register.beforeSave' => function (Event $event) {
                     /** @var UsersController $controller */
                     $controller = $event->getSubject();
@@ -56,83 +71,64 @@ class UsersController extends AppController
                     /** @var UsersController $controller */
                     $controller = $event->getSubject();
                     $controller->Flash->error(__d('users', 'Invalid registration data.'));
+                },
+
+                'Controller.Users.login.afterIdentify' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+
+                    $controller->Auth->setUser($event->getData('user'));
+                    return $controller->redirect($controller->Auth->redirectUrl());
+                },
+                'Controller.Users.login.afterFail' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+
+                    $controller->Flash->error(__d('users', 'Username or password is incorrect'));
+                },
+                'Controller.Users.login.before' => function (Event $event) {
+                    /** @var UsersController $controller */
+                    $controller = $event->getSubject();
+
+                    /** @var UsersTable $Users */
+                    $Users = $controller->loadModel();
+                    $Users->addBehavior('Dwdm/Users.EmailLogin');
+
+                    /** @var AuthComponent $Auth */
+                    $Auth = $controller->components()->get('Auth');
+                    $Auth->getAuthenticate('Form')
+                        ->setConfig(
+                            ['finder' => 'user', 'fields' => ['username' => 'email'], 'userModel' => 'Dwdm/Users.Users'],
+                            null,
+                            true
+                        );
                 }
             ];
     }
 
-
     /**
-     * Index method
+     * Login user.
      *
-     * @return \Cake\Http\Response|void
+     * @return Response|null
      */
-    public function index()
+    public function login()
     {
-        $users = $this->paginate($this->Users);
+        $result = $this->dispatchEvent($this->_eventName('before'), null, $this)->getResult();
 
-        $this->set(compact('users'));
-        $this->set('_serialize', ['users']);
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $user = $this->Users->get($id, [
-            'contain' => ['UserContacts']
-        ]);
-
-        $this->set('user', $user);
-        $this->set('_serialize', ['user']);
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $user = $this->Users->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+        if ($this->request->is('post')) {
+            if ($user = $this->Auth->identify()) {
+                $result = $this->dispatchEvent($this->_eventName('afterIdentify'), compact('user'), $this)->getResult();
+            } else {
+                $result = $this->dispatchEvent($this->_eventName('afterFail'), null, $this)->getResult();
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
-        }
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
-    }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
-        } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+            if ($result instanceof Response) {
+                return $result;
+            }
         }
 
-        return $this->redirect(['action' => 'index']);
+        $result = $this->dispatchEvent($this->_eventName('after'), null, $this)->getResult();
+
+        return ($result instanceof Response) ? $result : null;
     }
 }

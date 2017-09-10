@@ -2,8 +2,6 @@
 namespace Dwdm\Users\Model\Table;
 
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
-use Dwdm\Users\Model\Validation\UsersRegisterValidator;
 
 /**
  * Users Model
@@ -35,8 +33,6 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
-
-        $this->setValidator('default', new UsersRegisterValidator());
 
         $this->hasMany('UserAttributes', [
             'foreignKey' => 'user_id',

@@ -19,6 +19,13 @@ class UserContactsController extends AppController
         update as confirm;
     }
 
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->Auth->allow(['confirm']);
+    }
+
     public function implementedEvents()
     {
         return parent::implementedEvents() + [
@@ -46,7 +53,7 @@ class UserContactsController extends AppController
                         $controller->request = $controller->request->withMethod('POST');
                     }
 
-                    if (!empty($params['token']) && !$contact) {
+                    if (!empty($params['UserContacts.token']) && !$contact) {
                         $controller->request = $controller->request->withMethod('GET');
                         $controller->request->clearDetectorCache();
                         $controller->Flash->error(__d('users', 'Contact was not found.'));
