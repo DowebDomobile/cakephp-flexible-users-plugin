@@ -21,16 +21,20 @@ class UsersController extends AppController
         create as register;
     }
 
-    public function initialize()
-    {
-        parent::initialize();
-
-        $this->Auth->allow(['register']);
-    }
-
     public function implementedEvents()
     {
-        return parent::implementedEvents() + [
+        return [
+                'Controller.initialize' => [
+                    ['callable' => 'beforeFilter'],
+                    [
+                        'callable' => function (Event $event) {
+                            /** @var UsersController $controller */
+                            $controller = $event->getSubject();
+
+                            $controller->Auth->allow(['register']);
+                        }
+                    ]
+                ],
                 'Controller.Users.register.before' => function (Event $event) {
                     /** @var UsersController $controller */
                     $controller = $event->getSubject();
@@ -103,7 +107,7 @@ class UsersController extends AppController
                             true
                         );
                 }
-            ];
+            ] + parent::implementedEvents();
     }
 
     /**

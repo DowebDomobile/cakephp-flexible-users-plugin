@@ -19,16 +19,20 @@ class UserContactsController extends AppController
         update as confirm;
     }
 
-    public function initialize()
-    {
-        parent::initialize();
-
-        $this->Auth->allow(['confirm']);
-    }
-
     public function implementedEvents()
     {
-        return parent::implementedEvents() + [
+        return [
+                'Controller.initialize' => [
+                    ['callable' => 'beforeFilter'],
+                    [
+                        'callable' => function (Event $event) {
+                            /** @var UsersController $controller */
+                            $controller = $event->getSubject();
+
+                            $controller->Auth->allow(['confirm']);
+                        }
+                    ]
+                ],
                 'Controller.UserContacts.confirm.before' => function (Event $event) {
                     /** @var UserContactsController $controller */
                     $controller = $event->getSubject();
@@ -90,6 +94,6 @@ class UserContactsController extends AppController
 
                     return $controller->loadModel()->newEntity();
                 }
-            ];
+            ] + parent::implementedEvents();
     }
 }
