@@ -5,9 +5,7 @@
 
 namespace Dwdm\Users\Controller\Crud;
 
-use Cake\Controller\Component\FlashComponent;
 use Cake\Datasource\RepositoryInterface;
-use Cake\Event\Event;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
@@ -20,10 +18,7 @@ use Cake\ORM\Table;
  *
  * @property ServerRequest $request
  *
- * @method self set($name, $value = null)
  * @method RepositoryInterface loadModel($modelClass = null, $modelType = null)
- * @method Event dispatchEvent($name, $data = null, $subject = null)
- * @property FlashComponent $Flash
  */
 trait CrudAwareTrait
 {

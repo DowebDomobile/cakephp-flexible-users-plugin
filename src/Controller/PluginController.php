@@ -7,7 +7,7 @@ namespace Dwdm\Users\Controller;
 
 use App\Controller\AppController;
 
-class PluginController extends AppController
+abstract class PluginController extends AppController
 {
 
 }

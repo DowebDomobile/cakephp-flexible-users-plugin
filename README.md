@@ -14,11 +14,14 @@ composer require Dwdm/Users
 
 - user
 - - register 
-- - confirm
+- - confirm contact
 - - login
+- - logout
 - - restore password
+- - confirm password
 - - view profile
 - - edit profile
 - - change contact
 - - change password
+
 - admin

@@ -6,18 +6,21 @@
 namespace Dwdm\Users\Controller\Action;
 
 use Cake\Controller\Component\AuthComponent;
+use Cake\Event\Event;
 use Cake\Http\Response;
-use Dwdm\Users\Controller\Crud\CrudAwareTrait;
+use Cake\Network\Request;
 
 /**
  * Trait LoginActionTrait
  * @package Dwdm\Users\Controller\Action
  *
  * @property AuthComponent $Auth
+ * @property Request $request
+ *
+ * @method Event dispatchEvent($name, $data = null, $subject = null)
  */
 trait LoginActionTrait
 {
-    use CrudAwareTrait;
 
     /**
      * Login user.

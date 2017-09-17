@@ -5,16 +5,23 @@
 
 namespace Dwdm\Users\Controller\Crud;
 
+use Cake\Datasource\RepositoryInterface;
+use Cake\Event\Event;
 use Cake\Http\Response;
+use Cake\Http\ServerRequest;
 
 /**
  * Trait CreateActionTrait
  *
  * @package Dwdm\Users\Controller\Crud
+ *
+ * @property ServerRequest $request
+ *
+ * @method Event dispatchEvent($name, $data = null, $subject = null)
+ * @method RepositoryInterface loadModel($modelClass = null, $modelType = null)
  */
 trait CreateActionTrait
 {
-    use CrudAwareTrait;
 
     /**
      * Create entity
