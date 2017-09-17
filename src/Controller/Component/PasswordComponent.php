@@ -5,7 +5,6 @@
 
 namespace Dwdm\Users\Controller\Component;
 
-use Cake\Controller\Component;
 use Cake\Event\Event;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
@@ -15,7 +14,7 @@ use Dwdm\Users\Model\Entity\User;
 /**
  * Password component
  */
-class PasswordComponent extends Component
+class PasswordComponent extends AbstractAccessComponent
 {
 
     /**
@@ -24,7 +23,7 @@ class PasswordComponent extends Component
      * @var array
      */
     protected $_defaultConfig = [
-        'isAccessControlEnabled' => false,
+        'publicActions' => ['restore'],
         'successUrl' => ['action' => 'confirm'],
         'behavior' => [
             'className' => 'Dwdm/Users.Login',
@@ -37,25 +36,11 @@ class PasswordComponent extends Component
      */
     public function implementedEvents()
     {
-        $initialize = $this->getConfig('isAccessControlEnabled') ? [] : ['Controller.initialize' => 'allowAccess'];
-        return $initialize +[
+        return [
                 'Controller.Users.restore.before' => 'getUserEntity',
                 'Controller.Users.restore.beforeSave' => 'createToken',
                 'Controller.Users.restore.afterSave' => 'redirect',
             ] + parent::implementedEvents();
-    }
-
-    /**
-     * Allow access to public actions for non authorized user.
-     *
-     * @param Event $event
-     */
-    public function allowAccess(Event $event)
-    {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
-        $controller->Auth->allow(['restore']);
     }
 
     /**

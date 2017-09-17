@@ -5,7 +5,6 @@
 
 namespace Dwdm\Users\Controller\Component;
 
-use Cake\Controller\Component;
 use Cake\Event\Event;
 use Dwdm\Users\Controller\PluginController;
 use Dwdm\Users\Model\Entity\UserContact;
@@ -13,7 +12,7 @@ use Dwdm\Users\Model\Entity\UserContact;
 /**
  * ContactConfirm component
  */
-class ContactConfirmComponent extends Component
+class ContactConfirmComponent extends AbstractAccessComponent
 {
 
     /**
@@ -22,31 +21,17 @@ class ContactConfirmComponent extends Component
      * @var array
      */
     protected $_defaultConfig = [
-        'isAccessControlEnabled' => false,
+        'publicActions' => ['confirm'],
         'successUrl' => ['controller' => 'Users', 'action' => 'login'],
     ];
 
     public function implementedEvents()
     {
-        $initialize = $this->getConfig('isAccessControlEnabled') ? [] : ['Controller.initialize' => 'allowAccess'];
-        return $initialize + [
+        return [
                 'Controller.UserContacts.confirm.before' => 'getContact',
                 'Controller.UserContacts.confirm.beforeSave' => 'activateContact',
                 'Controller.UserContacts.confirm.afterSave' => 'activationSuccess',
             ] + parent::implementedEvents();
-    }
-
-    /**
-     * Allow access to public actions for non authorized user.
-     *
-     * @param Event $event
-     */
-    public function allowAccess(Event $event)
-    {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
-        $controller->Auth->allow(['confirm']);
     }
 
     /**

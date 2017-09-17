@@ -43,8 +43,8 @@ class LoginComponent extends Component
         $auth = ['callable' => 'configureAuth'];
 
         return [
-                'Controller.Users.login.before' => $this->getConfig('authenticate') === null
-                    ? [$model] : [$model, $auth],
+                'Controller.Users.login.before' => is_array($this->getConfig('authenticate'))
+                    ? [$model, $auth] : [$model],
                 'Controller.Users.login.afterIdentify' => 'afterIdentify',
                 'Controller.Users.login.afterFail' => 'sendError',
             ] + parent::implementedEvents();

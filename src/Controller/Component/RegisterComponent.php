@@ -5,7 +5,6 @@
 
 namespace Dwdm\Users\Controller\Component;
 
-use Cake\Controller\Component;
 use Cake\Event\Event;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
@@ -16,7 +15,7 @@ use Dwdm\Users\Model\Validation\UsersRegisterValidator;
  * Class RegisterComponent
  * @package Dwdm\Users\Controller\Component
  */
-class RegisterComponent extends Component
+class RegisterComponent extends AbstractAccessComponent
 {
 
     /**
@@ -27,7 +26,7 @@ class RegisterComponent extends Component
      * @var array
      */
     protected $_defaultConfig = [
-        'isAccessControlEnabled' => false,
+        'publicActions' => ['register'],
         'validatorClassName' => UsersRegisterValidator::class,
         'user' => [
             'prepareDataCallback' => null,
@@ -44,11 +43,11 @@ class RegisterComponent extends Component
      */
     public function initialize(array $config)
     {
+        parent::initialize($config);
+
         if (null === $this->getConfig('user.prepareDataCallback'))  {
             $this->setConfig('user.prepareDataCallback', [$this, '_prepareData']);
         }
-
-        parent::initialize($config);
     }
 
     /**
@@ -56,26 +55,12 @@ class RegisterComponent extends Component
      */
     public function implementedEvents()
     {
-        $initialize = $this->getConfig('isAccessControlEnabled') ? [] : ['Controller.initialize' => 'allowAccess'];
-        return  $initialize + [
+        return [
                 'Controller.Users.register.before' => 'setValidator',
                 'Controller.Users.register.beforeSave' => 'createUserEntity',
                 'Controller.Users.register.afterSave' => 'registrationSuccess',
                 'Controller.Users.register.afterFail' => 'registrationFail',
             ] + parent::implementedEvents();
-    }
-
-    /**
-     * Allow access to public actions for non authorized user.
-     *
-     * @param Event $event
-     */
-    public function allowAccess(Event $event)
-    {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
-        $controller->Auth->allow(['register']);
     }
 
     /**
