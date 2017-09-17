@@ -1,14 +1,17 @@
 <?php
+/**
+ * @copyright     Copyright (c) DowebDomobile (http://dowebdomobile.ru)
+ */
+
 namespace Dwdm\Users\Model\Behavior;
 
 use Cake\ORM\Behavior;
 use Cake\ORM\Query;
-use Cake\ORM\Table;
 
 /**
- * EmailLogin behavior
+ * Login behavior
  */
-class EmailLoginBehavior extends Behavior
+class LoginBehavior extends Behavior
 {
 
     /**
@@ -16,13 +19,15 @@ class EmailLoginBehavior extends Behavior
      *
      * @var array
      */
-    protected $_defaultConfig = [];
+    protected $_defaultConfig = [
+        'contact' => ['names' => 'email']
+    ];
 
     public function findUser(Query $query, array $options)
     {
         $query->matching('UserContacts')
             ->where([
-                'UserContacts.name' => 'email',
+                'UserContacts.name IN' => $this->getConfig('contact.names'),
                 'UserContacts.value' => $options['username'],
                 'UserContacts.is_login' => true
             ], [], true);

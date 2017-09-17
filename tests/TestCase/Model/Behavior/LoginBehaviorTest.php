@@ -2,21 +2,21 @@
 namespace Dwdm\Users\Test\TestCase\Model\Behavior;
 
 use Cake\TestSuite\TestCase;
-use Dwdm\Users\Model\Behavior\EmailLoginBehavior;
+use Dwdm\Users\Model\Behavior\LoginBehavior;
 use Dwdm\Users\Model\Table\UsersTable;
 
 /**
- * Dwdm\Users\Model\Behavior\EmailLoginBehavior Test Case
+ * Dwdm\Users\Model\Behavior\LoginBehavior Test Case
  */
-class EmailLoginBehaviorTest extends TestCase
+class LoginBehaviorTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \Dwdm\Users\Model\Behavior\EmailLoginBehavior
+     * @var \Dwdm\Users\Model\Behavior\LoginBehavior
      */
-    public $EmailLogin;
+    public $Login;
 
     /**
      * setUp method
@@ -26,7 +26,7 @@ class EmailLoginBehaviorTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->EmailLogin = new EmailLoginBehavior(new UsersTable());
+        $this->Login = new LoginBehavior(new UsersTable());
     }
 
     /**
@@ -36,7 +36,7 @@ class EmailLoginBehaviorTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->EmailLogin);
+        unset($this->Login);
 
         parent::tearDown();
     }

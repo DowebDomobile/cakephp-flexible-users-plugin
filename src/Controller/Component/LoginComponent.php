@@ -28,9 +28,15 @@ class LoginComponent extends Component
             'fields' => ['username' => 'email'],
             'userModel' => 'Dwdm/Users.Users'
         ],
-        'behaviorClassName' => 'Dwdm/Users.EmailLogin',
+        'behavior' => [
+            'className' => 'Dwdm/Users.Login',
+            'options' => []
+        ],
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     public function implementedEvents()
     {
         $model = ['callable' => 'configureModel'];
@@ -44,6 +50,11 @@ class LoginComponent extends Component
             ] + parent::implementedEvents();
     }
 
+    /**
+     * Add behavior to model.
+     *
+     * @param Event $event
+     */
     public function configureModel(Event $event)
     {
         /** @var PluginController $controller */
@@ -51,9 +62,14 @@ class LoginComponent extends Component
 
         /** @var Table $Users */
         $Users = $controller->loadModel();
-        $Users->addBehavior($this->getConfig('behaviorClassName'));
+        $Users->addBehavior($this->getConfig('behavior.className'), $this->getConfig('behavior.options'));
     }
 
+    /**
+     * Set config for FormAuthenticate object.
+     *
+     * @param Event $event
+     */
     public function configureAuth(Event $event)
     {
         /** @var PluginController $controller */
@@ -64,6 +80,12 @@ class LoginComponent extends Component
         $Auth->getAuthenticate('Form')->setConfig($this->getConfig('authenticate'), null, true);
     }
 
+    /**
+     * Set authorized user and redirect to auth redirect url.
+     *
+     * @param Event $event
+     * @return \Cake\Http\Response|null
+     */
     public function afterIdentify(Event $event) {
         /** @var PluginController $controller */
         $controller = $event->getSubject();
@@ -72,6 +94,11 @@ class LoginComponent extends Component
         return $controller->redirect($controller->Auth->redirectUrl());
     }
 
+    /**
+     * Show flash error message.
+     *
+     * @param Event $event
+     */
     public function sendError(Event $event)
     {
         /** @var PluginController $controller */

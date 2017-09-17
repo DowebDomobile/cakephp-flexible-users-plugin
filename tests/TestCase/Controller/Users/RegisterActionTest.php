@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright     Copyright (c) DowebDomobile (http://dowebdomobile.ru)
+ */
+
 namespace Dwdm\Users\Test\TestCase\Controller\Users;
 
 use Dwdm\Users\Model\Entity\User;
@@ -44,9 +48,7 @@ class RegisterActionTest extends UsersControllerTestCase
 
         $this->assertCount(count($userFixture->records) + 1, $query);
 
-        $query = TableRegistry::get('Dwdm/Users.Users')
-            ->find()
-            ->contain(['UserContacts', 'UserAttributes'])
+        $query->contain(['UserContacts', 'UserAttributes'])
             ->where(['id <' => 100]);
 
         $this->assertCount(1, $query);

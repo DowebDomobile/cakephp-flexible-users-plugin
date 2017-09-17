@@ -28,5 +28,6 @@ class UsersController extends PluginController
 
         $this->loadComponent('Dwdm/Users.Register');
         $this->loadComponent('Dwdm/Users.Login');
+        $this->loadComponent('Dwdm/Users.Password');
     }
 }
