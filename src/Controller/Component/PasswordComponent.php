@@ -23,7 +23,7 @@ class PasswordComponent extends AbstractAccessComponent
      * @var array
      */
     protected $_defaultConfig = [
-        'publicActions' => ['restore'],
+        'publicActions' => ['restore', 'confirm'],
         'successUrl' => ['action' => 'confirm'],
         'behavior' => [
             'className' => 'Dwdm/Users.Login',
@@ -37,9 +37,10 @@ class PasswordComponent extends AbstractAccessComponent
     public function implementedEvents()
     {
         return [
-                'Controller.Users.restore.before' => 'getUserEntity',
+                'Controller.Users.restore.before' => 'getRestoringUser',
                 'Controller.Users.restore.beforeSave' => 'createToken',
                 'Controller.Users.restore.afterSave' => 'redirect',
+                'Controller.Users.confirm.before' => 'getConfirmingUser',
             ] + parent::implementedEvents();
     }
 
@@ -49,7 +50,7 @@ class PasswordComponent extends AbstractAccessComponent
      * @param Event $event
      * @return \Cake\Datasource\EntityInterface
      */
-    public function getUserEntity(Event $event)
+    public function getRestoringUser(Event $event)
     {
         /** @var PluginController $controller */
         $controller = $event->getSubject();
@@ -70,6 +71,17 @@ class PasswordComponent extends AbstractAccessComponent
         }
 
         return $user ? : $Users->newEntity();
+    }
+
+    public function getConfirmingUser(Event $event)
+    {
+        /** @var PluginController $controller */
+        $controller = $event->getSubject();
+
+        /** @var Table $Users */
+        $Users = $controller->loadModel();
+
+        return $Users->newEntity();
     }
 
     /**

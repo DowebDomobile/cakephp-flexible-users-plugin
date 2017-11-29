@@ -4,7 +4,8 @@
     "type": "cakephp-plugin",
     "license": "MIT",
     "require": {
-        "cakephp/cakephp": "^3.4"
+        "cakephp/cakephp": "^3.4",
+        "friendsofcake/crud": "^4.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7|^6.0"

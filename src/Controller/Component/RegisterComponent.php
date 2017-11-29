@@ -5,9 +5,11 @@
 
 namespace Dwdm\Users\Controller\Component;
 
+use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
+use Crud\Event\Subject;
 use Dwdm\Users\Controller\PluginController;
 use Dwdm\Users\Model\Validation\UsersRegisterValidator;
 
@@ -55,12 +57,25 @@ class RegisterComponent extends AbstractAccessComponent
      */
     public function implementedEvents()
     {
-        return [
-                'Controller.Users.register.before' => 'setValidator',
-                'Controller.Users.register.beforeSave' => 'createUserEntity',
-                'Controller.Users.register.afterSave' => 'registrationSuccess',
-                'Controller.Users.register.afterFail' => 'registrationFail',
-            ] + parent::implementedEvents();
+        /** @var Controller $controller */
+        $controller = $this->getController();
+
+        $listeners = [];
+        if ('register' == $controller->request->getParam('action')) {
+            $listeners = [
+                'Crud.beforeFilter' => [
+                    ['callable' => 'setValidator'],
+                    ['callable' => 'setSaveOptions'],
+                    ['callable' => 'modifyRequest'],
+                ],
+                'Crud.setFlash' => 'setFlash',
+                'Crud.beforeRedirect' => 'redirect',
+//                'Controller.Users.register.afterSave' => 'registrationSuccess',
+//                'Controller.Users.register.afterFail' => 'registrationFail',
+            ];
+        }
+
+        return $listeners + parent::implementedEvents();
     }
 
     /**
@@ -70,48 +85,71 @@ class RegisterComponent extends AbstractAccessComponent
      */
     public function setValidator(Event $event)
     {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
         $validatorClassName = $this->getConfig('validatorClassName');
 
         /** @var Table $Users */
-        $Users = $controller->loadModel();
+        $Users = $this->getController()->loadModel();
         $Users->setValidator('default', new $validatorClassName);
     }
 
     /**
-     * Create user entity data for save entity.
+     * Set save options to CRUD.
      *
      * @param Event $event
-     * @return array
      */
-    public function createUserEntity(Event $event) {
+    public function setSaveOptions(Event $event)
+    {
         /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
-        $callback = $this->getConfig('user.prepareDataCallback');
-        $data = $controller->request->getData();
-        $data = is_callable($callback) ? call_user_func($callback, $data) : $data;
-
-        $options = $this->getConfig('user.saveOptions');
-
-        return compact('data', 'options');
+        $controller = $this->getController();
+        $controller->Crud->setConfig('actions', ['register' => ['saveOptions' => $this->getConfig('user.saveOptions')]]);
     }
 
     /**
-     * Set success flash message and redirect to successUrl.
+     * Prepare request data from for save.
+     *
+     * @param Event $event
+     */
+    public function modifyRequest(Event $event)
+    {
+        $callback = $this->getConfig('user.prepareDataCallback');
+        if ($callback && is_callable($callback)) {
+            /** @var PluginController $controller */
+            $controller = $this->getController();
+            $request = $controller->request;
+
+            $data = call_user_func($callback, $request->getData());
+
+            foreach ($data as $key => $value) {
+                $request = $request->withData($key, $value);
+            }
+
+            $controller->request = $request;
+        }
+    }
+
+    /**
+     * Set flash message.
+     *
+     * @param Event $event
+     */
+    public function setFlash(Event $event)
+    {
+        /** @var Subject $subject */
+        $subject = $event->getSubject();
+        $subject->set(['text' => __d('users', 'Registration success. Confirmation message was sent.')]);
+    }
+
+    /**
+     * Set redirect url.
      *
      * @param Event $event
      * @return \Cake\Http\Response|null
      */
-    public function registrationSuccess(Event $event)
+    public function redirect(Event $event)
     {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
-        $controller->Flash->success(__d('users', 'Registration success. Confirmation message was sent.'));
-        return $controller->redirect($this->getConfig('successUrl'));
+        /** @var Subject $subject */
+        $subject = $event->getSubject();
+        $subject->set(['url' => $this->getConfig('successUrl')]);
     }
 
     /**

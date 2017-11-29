@@ -29,9 +29,6 @@ class RegisterActionTest extends UsersControllerTestCase
         $this->assertResponseContains('Submit');
 
         $this->assertResponseOk();
-
-        $this->assertEventFired('Controller.Users.register.before');
-        $this->assertEventFired('Controller.Users.register.after');
     }
 
     public function testPostRegisterFormSuccess()
@@ -78,10 +75,6 @@ class RegisterActionTest extends UsersControllerTestCase
         $this->assertNotEmpty($contact->updated);
         $this->assertNotEmpty($contact->token);
         $this->assertNull($contact->expiration);
-
-        $this->assertEventFired('Controller.Users.register.before');
-        $this->assertEventFired('Controller.Users.register.beforeSave');
-        $this->assertEventFired('Controller.Users.register.afterSave');
     }
 
     public function testPostRegisterEmptyFromFail()
