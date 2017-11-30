@@ -1,15 +1,15 @@
 <?php
-/** and confirm registration
+/**
  * @copyright     Copyright (c) DowebDomobile (http://dowebdomobile.ru)
  */
 
-namespace Dwdm\Users\Model\Validation;
+namespace Dwdm\Users\Validation;
 
 use Cake\Validation\Validator;
 
 /**
  * Class UsersRegisterValidator
- * @package Dwdm\Users\Model\Validation
+ * @package Dwdm\Users\Validation
  */
 class UsersRegisterValidator extends Validator
 {

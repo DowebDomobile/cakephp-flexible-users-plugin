@@ -79,6 +79,19 @@ class RegisterActionTest extends UsersControllerTestCase
 
     public function testPostRegisterEmptyFromFail()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->post('/users/users/register', []);
+
+        $this->assertResponseContains('Register');
+        $this->assertResponseContains('Email');
+        $this->assertResponseContains('name="email"');
+        $this->assertResponseContains('Password');
+        $this->assertResponseContains('name="password"');
+        $this->assertResponseContains('Verify');
+        $this->assertResponseContains('name="verify"');
+        $this->assertResponseContains('Submit');
+        $this->assertResponseContains('Registration error.');
+        $this->assertResponseContains('This field is required');
+
+        $this->assertResponseOk();
     }
 }

@@ -11,7 +11,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Text;
 use Crud\Event\Subject;
 use Dwdm\Users\Controller\PluginController;
-use Dwdm\Users\Model\Validation\UsersRegisterValidator;
+use Dwdm\Users\Validation\UsersRegisterValidator;
 
 /**
  * Class RegisterComponent
@@ -70,8 +70,6 @@ class RegisterComponent extends AbstractAccessComponent
                 ],
                 'Crud.setFlash' => 'setFlash',
                 'Crud.beforeRedirect' => 'redirect',
-//                'Controller.Users.register.afterSave' => 'registrationSuccess',
-//                'Controller.Users.register.afterFail' => 'registrationFail',
             ];
         }
 
@@ -136,7 +134,10 @@ class RegisterComponent extends AbstractAccessComponent
     {
         /** @var Subject $subject */
         $subject = $event->getSubject();
-        $subject->set(['text' => __d('users', 'Registration success. Confirmation message was sent.')]);
+        $subject->set(['text' => $subject->created ?
+            __d('users', 'Registration success. Confirmation message was sent.') :
+            __d('users', 'Registration error.')
+        ]);
     }
 
     /**
