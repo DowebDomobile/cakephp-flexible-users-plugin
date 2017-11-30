@@ -34,6 +34,8 @@ abstract class PluginController extends AppController
 
         if (!$this->components()->has('Crud')) {
             $this->loadComponent('Crud.Crud', ['actions' => []]);
+        } else {
+            $this->Crud->setConfig(['actions' => []]);
         }
     }
 }

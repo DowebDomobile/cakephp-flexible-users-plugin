@@ -144,25 +144,12 @@ class RegisterComponent extends AbstractAccessComponent
      * Set redirect url.
      *
      * @param Event $event
-     * @return \Cake\Http\Response|null
      */
     public function redirect(Event $event)
     {
         /** @var Subject $subject */
         $subject = $event->getSubject();
         $subject->set(['url' => $this->getConfig('successUrl')]);
-    }
-
-    /**
-     * Set error flash message.
-     *
-     * @param Event $event
-     */
-    public function registrationFail(Event $event)
-    {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-        $controller->Flash->error(__d('users', 'Invalid registration data.'));
     }
 
     /**
