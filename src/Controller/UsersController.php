@@ -6,7 +6,7 @@ namespace Dwdm\Users\Controller;
 
 use Cake\Event\Event;
 use Dwdm\Users\Controller\Action\LoginAction;
-use Dwdm\Users\Controller\Action\LogoutActionTrait;
+use Dwdm\Users\Controller\Action\LogoutAction;
 use Dwdm\Users\Controller\Crud\CrudAwareTrait;
 use Dwdm\Users\Controller\Crud\UpdateActionTrait;
 
@@ -15,7 +15,7 @@ use Dwdm\Users\Controller\Crud\UpdateActionTrait;
  */
 class UsersController extends PluginController
 {
-    use CrudAwareTrait, LogoutActionTrait, UpdateActionTrait {
+    use CrudAwareTrait, UpdateActionTrait {
         update as restore;
         update as confirm;
         update as edit;
@@ -25,6 +25,7 @@ class UsersController extends PluginController
     {
         $this->Crud->mapAction('register', 'Crud.Add');
         $this->Crud->mapAction('login', LoginAction::class);
+        $this->Crud->mapAction('logout', LogoutAction::class);
     }
 
     public function initialize()

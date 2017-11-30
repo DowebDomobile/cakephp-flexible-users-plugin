@@ -76,9 +76,9 @@ class LoginAction extends BaseAction
         $this->_trigger('beforeLogin', $subject);
         if ($user = $controller->Auth->identify()) {
             $subject->set(['user' => $user]);
-            $this->_success($subject);
+            return $this->_success($subject);
         } else {
-            $this->_error($subject);
+            return $this->_error($subject);
         }
     }
 
