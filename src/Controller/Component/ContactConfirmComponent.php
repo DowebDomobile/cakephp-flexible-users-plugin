@@ -12,7 +12,7 @@ use Dwdm\Users\Model\Entity\UserContact;
 /**
  * ContactConfirm component
  */
-class ContactConfirmComponent extends AbstractAccessComponent
+class ContactConfirmComponent extends AbstractComponent
 {
 
     /**

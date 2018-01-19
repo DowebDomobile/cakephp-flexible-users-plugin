@@ -14,7 +14,7 @@ use Dwdm\Users\Model\Entity\User;
 /**
  * Password component
  */
-class PasswordComponent extends AbstractAccessComponent
+class PasswordComponent extends AbstractComponent
 {
 
     /**

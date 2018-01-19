@@ -17,7 +17,7 @@ use Dwdm\Users\Validation\UsersRegisterValidator;
  * Class RegisterComponent
  * @package Dwdm\Users\Controller\Component
  */
-class RegisterComponent extends AbstractAccessComponent
+class RegisterComponent extends AbstractComponent
 {
 
     /**
@@ -28,15 +28,27 @@ class RegisterComponent extends AbstractAccessComponent
      * @var array
      */
     protected $_defaultConfig = [
-        'action' => 'register',
+        'actions' => [
+            'register' => [
+                'className' => 'Crud.Add',
+                'saveOptions' => [
+                    'fields' => ['password', 'contacts'],
+                    'associated' => ['UserContacts' => ['fields' => ['name', 'replace', 'token', 'is_login']]]
+                ],
+                'listeners' => [
+                    'Crud.beforeFilter' => [
+                        ['callable' => 'setValidator'],
+                        ['callable' => 'modifyRequest'],
+                    ],
+                    'Crud.setFlash' => 'setFlash',
+                    'Crud.beforeRedirect' => 'redirect',
+                ],
+            ]
+        ],
         'publicActions' => ['register'],
         'validatorClassName' => UsersRegisterValidator::class,
         'user' => [
             'prepareDataCallback' => null,
-            'saveOptions' => [
-                'fields' => ['password', 'contacts'],
-                'associated' => ['UserContacts' => ['fields' => ['name', 'replace', 'token', 'is_login']]]
-            ],
         ],
         'successUrl' => ['controller' => 'UserContacts', 'action' => 'confirm'],
     ];
@@ -54,30 +66,6 @@ class RegisterComponent extends AbstractAccessComponent
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function implementedEvents()
-    {
-        /** @var Controller $controller */
-        $controller = $this->getController();
-
-        $listeners = [];
-        if ($this->getConfig('action') == $controller->request->getParam('action')) {
-            $listeners = [
-                'Crud.beforeFilter' => [
-                    ['callable' => 'setValidator'],
-                    ['callable' => 'setSaveOptions'],
-                    ['callable' => 'modifyRequest'],
-                ],
-                'Crud.setFlash' => 'setFlash',
-                'Crud.beforeRedirect' => 'redirect',
-            ];
-        }
-
-        return $listeners + parent::implementedEvents();
-    }
-
-    /**
      * Set register form validator from config.
      *
      * @param Event $event
@@ -89,18 +77,6 @@ class RegisterComponent extends AbstractAccessComponent
         /** @var Table $Users */
         $Users = $this->getController()->loadModel();
         $Users->setValidator('default', new $validatorClassName);
-    }
-
-    /**
-     * Set save options to CRUD.
-     *
-     * @param Event $event
-     */
-    public function setSaveOptions(Event $event)
-    {
-        /** @var PluginController $controller */
-        $controller = $this->getController();
-        $controller->Crud->setConfig('actions', ['register' => ['saveOptions' => $this->getConfig('user.saveOptions')]]);
     }
 
     /**

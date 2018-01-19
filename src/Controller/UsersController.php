@@ -11,18 +11,8 @@ use Cake\Event\Event;
  */
 class UsersController extends PluginController
 {
-    public function beforeFilter(Event $event)
-    {
-        $this->Crud->mapAction('register', 'Crud.Add');
-        $this->Crud->mapAction('login', 'CrudUsers.Login');
-        $this->Crud->mapAction('logout', 'Dwdm/Users.Logout');
-    }
-
     public function initialize()
     {
         parent::initialize();
-
-        $this->loadComponent('Dwdm/Users.Register');
-        $this->loadComponent('Dwdm/Users.Login');
     }
 }

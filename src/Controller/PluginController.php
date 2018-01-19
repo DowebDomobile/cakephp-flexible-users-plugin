@@ -7,6 +7,7 @@ namespace Dwdm\Users\Controller;
 
 use App\Controller\AppController;
 use Cake\Controller\Component\AuthComponent;
+use Cake\Core\Configure;
 use Crud\Controller\Component\CrudComponent;
 use Crud\Controller\ControllerTrait;
 
@@ -36,6 +37,19 @@ abstract class PluginController extends AppController
             $this->loadComponent('Crud.Crud', ['actions' => []]);
         } else {
             $this->Crud->setConfig(['actions' => []]);
+        }
+
+        $config = Configure::read('App.plugins.Dwdm/Users.' . $this->name, [
+            'components' => ['Dwdm/Users.Register', 'Dwdm/Users.Login'],
+        ]);
+        if (isset($config['components']) && is_array($config['components'])) {
+            foreach ($config['components'] as $component => $config) {
+                if (is_string($config)) {
+                    $component = $config;
+                    $config = [];
+                }
+                $this->loadComponent($component, $config);
+            }
         }
     }
 }

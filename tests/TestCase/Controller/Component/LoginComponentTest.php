@@ -26,8 +26,6 @@ class LoginComponentTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $registry = new ComponentRegistry();
-        $this->Login = new LoginComponent($registry);
     }
 
     /**
