@@ -28,6 +28,7 @@ class RegisterComponent extends AbstractAccessComponent
      * @var array
      */
     protected $_defaultConfig = [
+        'action' => 'register',
         'publicActions' => ['register'],
         'validatorClassName' => UsersRegisterValidator::class,
         'user' => [
@@ -61,7 +62,7 @@ class RegisterComponent extends AbstractAccessComponent
         $controller = $this->getController();
 
         $listeners = [];
-        if ('register' == $controller->request->getParam('action')) {
+        if ($this->getConfig('action') == $controller->request->getParam('action')) {
             $listeners = [
                 'Crud.beforeFilter' => [
                     ['callable' => 'setValidator'],

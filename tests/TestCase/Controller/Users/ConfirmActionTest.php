@@ -15,6 +15,8 @@ class ConfirmActionTest extends UsersControllerTestCase
 {
     public function testGetConfirmForm()
     {
+        $this->markTestIncomplete('Confirm user will be soon');
+
         $this->get('/users/users/confirm/');
 
         $this->assertResponseOk();

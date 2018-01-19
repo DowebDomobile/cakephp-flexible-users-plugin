@@ -36,7 +36,7 @@ class LoginActionTest extends UsersControllerTestCase
     {
         $this->post('/users/users/login', ['email' => 'user100@example.com', 'password' => 'invalid']);
 
-        $this->assertResponseContains('Incorrect login data');
+        $this->assertResponseContains('Invalid credentials, please try again');
         $this->assertResponseContains('<legend>Login</legend>');
         $this->assertResponseContains('Email');
         $this->assertResponseContains('name="email"');
