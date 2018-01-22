@@ -39,7 +39,7 @@ abstract class PluginController extends AppController
             $this->Crud->setConfig(['actions' => []]);
         }
 
-        $config = Configure::read('App.plugins.Dwdm/Users.' . $this->name, [
+        $config = Configure::read('Dwdm/Users.' . $this->name, [
             'components' => ['Dwdm/Users.Register', 'Dwdm/Users.Login'],
         ]);
         if (isset($config['components']) && is_array($config['components'])) {
