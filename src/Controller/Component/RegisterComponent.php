@@ -47,6 +47,7 @@ class RegisterComponent extends AbstractComponent
         ],
         'publicActions' => ['register'],
         'validatorClassName' => UsersRegisterValidator::class,
+        'modelName' => 'Dwdm/Users.Users',
         'user' => [
             'prepareDataCallback' => null,
         ],
@@ -75,7 +76,7 @@ class RegisterComponent extends AbstractComponent
         $validatorClassName = $this->getConfig('validatorClassName');
 
         /** @var Table $Users */
-        $Users = $this->getController()->loadModel();
+        $Users = $this->getController()->loadModel($this->getConfig('modelName'));
         $Users->setValidator('default', new $validatorClassName);
     }
 
@@ -147,6 +148,8 @@ class RegisterComponent extends AbstractComponent
                 'is_login' => true,
             ];
         }
+
+        unset($data['email']);
 
         return $data;
     }
