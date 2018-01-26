@@ -36,18 +36,16 @@ class LoginComponent extends AbstractComponent
             'className' => 'Dwdm/Users.Login',
             'options' => []
         ],
-
-
     ];
 
     public function initialize(array $config)
     {
         parent::initialize($config);
 
-        $listeners = $this->getConfig('actions.config.listeners');
+        $listeners = $this->getConfig('actions.login.listeners');
         $model = ['callable' => 'configureModel'];
         if (is_array($listeners) && empty($listeners)) {
-            $this->setConfig('actions.config.listeners', [
+            $this->setConfig('actions.login.listeners', [
                 'Crud.beforeLogin' => is_array($this->getConfig('authenticate')) ?
                     [$model, ['callable' => 'configureAuth']] : [$model],
             ]);
@@ -65,7 +63,7 @@ class LoginComponent extends AbstractComponent
         $controller = $this->getController();
 
         /** @var Table $Users */
-        $Users = $controller->loadModel();
+        $Users = $controller->loadModel($this->getConfig('authenticate.userModel'));
         $Users->addBehavior($this->getConfig('behavior.className'), $this->getConfig('behavior.options'));
     }
 
