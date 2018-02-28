@@ -11,6 +11,9 @@ use Cake\Event\Event;
  */
 class UsersController extends PluginController
 {
+    /** {@inheritDoc} */
+    protected $_defaultComponents = ['Dwdm/Users.Register', 'Dwdm/Users.Login'];
+
     public function initialize()
     {
         parent::initialize();

@@ -6,8 +6,10 @@
 namespace Dwdm\Users\Controller\Component;
 
 use Cake\Event\Event;
-use Dwdm\Users\Controller\PluginController;
+use Cake\ORM\Query;
+use Crud\Event\Subject;
 use Dwdm\Users\Model\Entity\UserContact;
+use Dwdm\Users\Model\Table\UserContactsTable;
 
 /**
  * ContactConfirm component
@@ -21,95 +23,63 @@ class ContactConfirmComponent extends AbstractComponent
      * @var array
      */
     protected $_defaultConfig = [
+        'actions' => [
+            'confirm' => [
+                'className' => 'Crud.Edit',
+                'listeners' => [
+                    'Crud.beforeFind' => 'updateQuery',
+                    'Crud.afterFind' => 'confirmContact'
+                ],
+            ]
+        ],
         'publicActions' => ['confirm'],
         'successUrl' => ['controller' => 'Users', 'action' => 'login'],
     ];
 
-    public function implementedEvents()
+    public function updateQuery(Event $event)
     {
-        return [
-                'Controller.UserContacts.confirm.before' => 'getContact',
-                'Controller.UserContacts.confirm.beforeSave' => 'activateContact',
-                'Controller.UserContacts.confirm.afterSave' => 'activationSuccess',
-            ] + parent::implementedEvents();
+        /** @var Subject $subject */
+        $subject = $event->getSubject();
+        $token = $this->_getToken();
+
+        /** @var Query $query */
+        $query = $subject->query;
+
+        if ($this->getController()->request->is(['post', 'patch', 'put'])) {
+            $replace = $this->getController()->request->getData('replace');
+            $query->contain(['Users'])
+                ->where(['UserContacts.replace' => $replace, 'UserContacts.token' => $token]);
+        } elseif ($token) {
+            $query->contain(['Users'])->andWhere(['UserContacts.token' => $token]);
+        }
     }
 
-    /**
-     * Try to find contact by GET or POST data and return it or empty contact if not found.
-     *
-     * If contact found by GET data convert request to POST for confirm contact.
-     * If contact not found by POST data convert request to GET and show confirm form with error message.
-     *
-     * @param Event $event
-     * @return \Cake\Datasource\EntityInterface
-     */
-    public function getContact(Event $event) {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
+    public function confirmContact(Event $event)
+    {
+        /** @var UserContact $entity */
+        $entity = $event->getSubject()->entity;
+        if (($token = $this->_getToken()) && ($entity->token == $token)) {
+            $entity->value = $entity->replace;
+            $entity->replace = null;
+            $entity->token = null;
 
-        $params = [];
-        if ($controller->request->is('get')) {
-            foreach (['token', 'id'] as $name) {
-                $params['UserContacts.' . $name] = $controller->request->getParam($name);
+            if (null === $entity->user->is_active) {
+                $entity->user->is_active = true;
+                $entity->setDirty('user', true);
             }
-        } elseif ($controller->request->is(['post', 'put'])) {
-            $params = [
-                'UserContacts.name' => 'email',
-                'UserContacts.replace' => $controller->request->getData('email'),
-                'UserContacts.token' => $controller->request->getData('token'),
-            ];
+
+            /** @var UserContactsTable $Model */
+            $Model = $event->getSubject()->repository;
+            $Model->save($entity);
+
+            return $this->getController()->redirect($this->getConfig('successUrl'));
         }
 
-        /** @var UserContact $contact */
-        $contact = $controller->loadModel()->find('all', ['contain' => ['Users']])->where($params)->first();
-
-        if ($controller->request->is('get') && $contact) {
-            $controller->request = $controller->request->withMethod('POST');
-        }
-
-        if (!empty($params['UserContacts.token']) && !$contact) {
-            $controller->request = $controller->request->withMethod('GET');
-            $controller->request->clearDetectorCache();
-            $controller->Flash->error(__d('users', 'Contact was not found.'));
-        }
-
-        return $contact ?: $controller->loadModel()->newEntity();
     }
 
-    /**
-     * Set new user contact to actual state.
-     *
-     * If user just newly registered and not already active, activate them.
-     *
-     * @param Event $event
-     * @param UserContact $contact
-     * @return UserContact
-     */
-    public function activateContact(Event $event, UserContact $contact) {
-        $contact->value = $contact->replace;
-        $contact->replace = null;
-        $contact->token = null;
-
-        if (null === $contact->user->is_active) {
-            $contact->user->is_active = true;
-            $contact->setDirty('user', true);
-        }
-
-        return $contact;
-    }
-
-    /**
-     * Set success flash message and redirect to successUrl.
-     *
-     * @param Event $event
-     * @return \Cake\Http\Response|null
-     */
-    public function activationSuccess(Event $event) {
-        /** @var PluginController $controller */
-        $controller = $event->getSubject();
-
-        $controller->Flash->success(__d('users', 'Contact was confirmed. Please login.'));
-
-        return $controller->redirect($this->getConfig('successUrl'));
+    protected function _getToken()
+    {
+        $request = $this->getController()->request;
+        return $request->getParam('token') ? : $request->getData('token', false);
     }
 }

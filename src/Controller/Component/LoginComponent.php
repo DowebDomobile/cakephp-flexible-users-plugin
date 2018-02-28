@@ -25,7 +25,7 @@ class LoginComponent extends AbstractComponent
         'actions' => [
             'login' => [
                 'className' => 'CrudUsers.Login',
-                'listeners' => []
+                'listeners' => [],
             ], 'logout' => 'Dwdm/Users.Logout'],
         'authenticate' => [
             'finder' => 'user',

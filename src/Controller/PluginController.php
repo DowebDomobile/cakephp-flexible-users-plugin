@@ -22,6 +22,9 @@ abstract class PluginController extends AppController
 {
     use ControllerTrait;
 
+    /** @var array Components loaded by default for controller */
+    protected $_defaultComponents = [];
+
     public function initialize()
     {
         parent::initialize();
@@ -39,9 +42,7 @@ abstract class PluginController extends AppController
             $this->Crud->setConfig(['actions' => []]);
         }
 
-        $config = Configure::read('Dwdm/Users.' . $this->name, [
-            'components' => ['Dwdm/Users.Register', 'Dwdm/Users.Login'],
-        ]);
+        $config = Configure::read('Dwdm/Users.' . $this->name, ['components' => $this->_defaultComponents]);
         if (isset($config['components']) && is_array($config['components'])) {
             foreach ($config['components'] as $component => $config) {
                 if (is_string($config)) {

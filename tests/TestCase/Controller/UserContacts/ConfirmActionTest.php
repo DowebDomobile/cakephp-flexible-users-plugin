@@ -19,24 +19,21 @@ class ConfirmActionTest extends UsersControllerTestCase
 {
     public function testGetForm()
     {
-        $this->get('/users/user-contacts/confirm');
+        $this->get('/users/user-contacts/confirm/100');
 
         $this->assertResponseContains('Confirm contact');
-        $this->assertResponseContains('Email');
-        $this->assertResponseContains('name="email"');
-        $this->assertResponseContains('token');
+        $this->assertResponseContains('Contact');
+        $this->assertResponseContains('name="replace"');
+        $this->assertResponseContains('Token');
         $this->assertResponseContains('name="token"');
         $this->assertResponseContains('Submit');
 
         $this->assertResponseNotContains('Contact was not found');
 
         $this->assertResponseOk();
-
-        $this->assertEventFired('Controller.UserContacts.confirm.before');
-        $this->assertEventFired('Controller.UserContacts.confirm.after');
     }
 
-    public function testGetAfterRegister()
+    public function testGetWithConfirmToken()
     {
         /** @var UserContactsFixture $contactFixture */
         $contactFixture = $this->fixtureManager->loaded()['plugin.dwdm/users.user_contacts'];
@@ -65,10 +62,6 @@ class ConfirmActionTest extends UsersControllerTestCase
 
         $this->assertInstanceOf(User::class, $actualContact->user);
         $this->assertTrue($actualContact->user->is_active);
-
-        $this->assertEventFired('Controller.UserContacts.confirm.before');
-        $this->assertEventFired('Controller.UserContacts.confirm.beforeSave');
-        $this->assertEventFired('Controller.UserContacts.confirm.afterSave');
     }
 
     public function testPostAfterChange()
@@ -77,7 +70,8 @@ class ConfirmActionTest extends UsersControllerTestCase
         $contactFixture = $this->fixtureManager->loaded()['plugin.dwdm/users.user_contacts'];
         $contact = $contactFixture->records[2];
 
-        $this->post('/users/user-contacts/confirm', ['email' => $contact['replace'], 'token' => $contact['token']]);
+        $this->post('/users/user-contacts/confirm/' . $contact['id'],
+            ['replace' => $contact['replace'], 'token' => $contact['token']]);
 
         $this->assertResponseCode(302);
 
@@ -100,11 +94,6 @@ class ConfirmActionTest extends UsersControllerTestCase
 
         $this->assertInstanceOf(User::class, $actualContact->user);
         $this->assertTrue($actualContact->user->is_active);
-
-        $this->assertEventFired('Controller.UserContacts.confirm.before');
-        $this->assertEventFired('Controller.UserContacts.confirm.beforeSave');
-        $this->assertEventFired('Controller.UserContacts.confirm.afterSave');
-
     }
 
     public function testGetNotFound()
@@ -115,8 +104,7 @@ class ConfirmActionTest extends UsersControllerTestCase
 
         $this->get(sprintf('/users/user-contacts/confirm/%d/%s', $contact['id'], 'InvalidToken'));
 
-        $this->assertResponseContains('Contact was not found');
-        $this->assertResponseOk();
+        $this->assertResponseCode(404);
 
         $query = TableRegistry::get('Dwdm/Users.UserContacts')
             ->find()
@@ -137,9 +125,6 @@ class ConfirmActionTest extends UsersControllerTestCase
 
         $this->assertInstanceOf(User::class, $actualContact->user);
         $this->assertNull($actualContact->user->is_active);
-
-        $this->assertEventFired('Controller.UserContacts.confirm.before');
-        $this->assertEventFired('Controller.UserContacts.confirm.after');
     }
 
     public function testPostNotFound()
@@ -150,8 +135,7 @@ class ConfirmActionTest extends UsersControllerTestCase
 
         $this->post('/users/user-contacts/confirm', ['email' => $contact['replace'], 'token' => 'InvalidToken']);
 
-        $this->assertResponseContains('Contact was not found');
-        $this->assertResponseOk();
+        $this->assertResponseCode(404);
 
         $query = TableRegistry::get('Dwdm/Users.UserContacts')
             ->find()
@@ -172,8 +156,5 @@ class ConfirmActionTest extends UsersControllerTestCase
 
         $this->assertInstanceOf(User::class, $actualContact->user);
         $this->assertNull($actualContact->user->is_active);
-
-        $this->assertEventFired('Controller.UserContacts.confirm.before');
-        $this->assertEventFired('Controller.UserContacts.confirm.after');
     }
 }
