@@ -15,6 +15,6 @@ class LogoutAction extends \CrudUsers\Action\LogoutAction
 {
     protected function _post()
     {
-        $this->_get();
+        return $this->_get();
     }
 }
