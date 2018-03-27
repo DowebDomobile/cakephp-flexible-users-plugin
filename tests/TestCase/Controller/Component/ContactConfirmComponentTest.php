@@ -29,18 +29,6 @@ class ContactConfirmComponentTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-
-        $registry = new ComponentRegistry();
-        $mockEventManager = $this->createMock(EventManager::class);
-        $mockAuth = $this->createMock(AuthComponent::class);
-        $mockAuth->method('allow')->with($this->isType('array'));
-        $mockController = $this->createMock(Controller::class);
-        $mockController->method('getEventManager')->will($this->returnValue($mockEventManager));
-        $mockController->method('components')->will($this->returnValue($registry));
-
-        /** @var Controller $mockController */
-        $registry->setController($mockController);
-        $this->ContactConfirm = new ContactConfirmComponent($registry);
     }
 
     /**

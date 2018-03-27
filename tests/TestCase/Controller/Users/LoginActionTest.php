@@ -29,7 +29,7 @@ class LoginActionTest extends UsersControllerTestCase
 
         $this->assertResponseNotContains('Username or password is incorrect');
 
-        $this->assertResponseCode(200);
+        $this->assertResponseCode(302);
     }
 
     public function testPostFail()
