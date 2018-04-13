@@ -13,6 +13,8 @@
             echo $this->Form->control('password');
         ?>
     </fieldset>
+
+    <?= $this->Html->link(__d('users', 'Restore password'), ['action' => 'restore']) ?>
     <?= $this->Form->button(__d('users', 'Login')) ?>
     <?= $this->Form->end() ?>
 </div>

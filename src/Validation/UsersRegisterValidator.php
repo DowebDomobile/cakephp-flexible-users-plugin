@@ -5,13 +5,11 @@
 
 namespace Dwdm\Users\Validation;
 
-use Cake\Validation\Validator;
-
 /**
  * Class UsersRegisterValidator
  * @package Dwdm\Users\Validation
  */
-class UsersRegisterValidator extends Validator
+class UsersRegisterValidator extends PasswordVerifyValidator
 {
     public function __construct()
     {
@@ -22,17 +20,5 @@ class UsersRegisterValidator extends Validator
             ->scalar('email')
             ->notEmpty('email')
             ->email('email');
-
-        $this
-            ->requirePresence('password')
-            ->scalar('password')
-            ->notEmpty('password')
-            ->minLength('password', 6)
-            ->add('password', 'compareWith', ['rule' => ['compareWith', 'verify']]);
-
-        $this
-            ->requirePresence('verify')
-            ->scalar('verify')
-            ->notEmpty('verify');
     }
 }

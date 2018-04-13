@@ -19,8 +19,6 @@ class RestoreActionTest extends UsersControllerTestCase
 {
     public function testGetRestoreForm()
     {
-        $this->markTestIncomplete('Restore password will be soon');
-
         $this->get('/users/users/restore');
 
         $this->assertResponseContains('Restore password');
@@ -32,8 +30,6 @@ class RestoreActionTest extends UsersControllerTestCase
 
     public function testPostRestoreFormSuccess()
     {
-        $this->markTestIncomplete('Restore password will be soon');
-
         /** @var UsersFixture $userFixture */
         $userFixture = $this->fixtureManager->loaded()['plugin.dwdm/users.users'];
         $user = $userFixture->records[0];
@@ -60,8 +56,6 @@ class RestoreActionTest extends UsersControllerTestCase
 
     public function testPostRestoreFormFail()
     {
-        $this->markTestIncomplete('Restore password will be soon');
-
         $this->post('/users/users/restore', ['email' => 'invalid']);
 
         $this->assertResponseContains('User not found.');

@@ -4,15 +4,13 @@
  */
 namespace Dwdm\Users\Controller;
 
-use Cake\Event\Event;
-
 /**
  * Users Controller
  */
 class UsersController extends PluginController
 {
     /** {@inheritDoc} */
-    protected $_defaultComponents = ['Dwdm/Users.Register', 'Dwdm/Users.Login'];
+    protected $_defaultComponents = ['Dwdm/Users.Register', 'Dwdm/Users.Login', 'Dwdm/Users.Password'];
 
     public function initialize()
     {

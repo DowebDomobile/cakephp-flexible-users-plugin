@@ -55,7 +55,7 @@ class UsersFixture extends TestFixture
                 'id' => 102,
                 'password' => $password,
                 'registered' => 1504434628,
-                'token' => null,
+                'token' => 'token',
                 'expiration' => null,
                 'is_active' => 1
             ],
